@@ -11,7 +11,7 @@ variable "s3_bucket_name" {
 variable "image_name" {
   description = "Name of Docker image"
   type        = string
-  default = "lambda"
+  default = "lambda_image"
 }
 
 variable "source_path" {
@@ -35,7 +35,7 @@ variable "hash_script" {
 variable "push_script" {
   description = "Path to script to build and push Docker image"
   type        = string
-  default     = ""
+  default     = "scripts/push_image.sh"
 }
 
 variable "lambda_name" {
