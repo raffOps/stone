@@ -136,3 +136,7 @@ dmypy.json
 *.hcl
 
 *.tfstate
+
+terraform.tfstate.backup
+
+.terraform.tfstate.lock.info
