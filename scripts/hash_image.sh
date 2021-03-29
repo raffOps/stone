@@ -17,7 +17,7 @@ source_path=${1:-.}
 # Exclude Python cache files, dot files
 file_hashes="$(
     cd "$source_path" \
-    && find . -type f -not -name '*.pyc' -not -path './.**' \
+    && find ./Dockerfile -type f -not -name '*.pyc' -not -path './.**' \
     | sort \
     | xargs md5sum
 )"
