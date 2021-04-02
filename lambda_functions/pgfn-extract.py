@@ -3,6 +3,7 @@ from io import BytesIO, StringIO
 from multiprocessing.pool import ThreadPool
 import traceback
 import json
+import gc
 
 import requests
 from zipfile import ZipFile
@@ -23,11 +24,16 @@ def lambda_handler(event=None, context=None):
         for folder, url in zip(folders, zips_url):
             zip_response = requests.get(url)
             zip_file = ZipFile(BytesIO(zip_response.content), mode="r")
+            del(zip_response)
+            gc.collect()
             for filename in zip_file.namelist():
                 file = zip_file.read(filename).decode("latin1")
                 df = pd.DataFrame(StringIO(file))
+                del(file)
+                #gc.collect()
                 wr.s3.to_csv(df=df, path=f"s3://{bucket_name}/{folder}/{filename}")
                 del(df)
+                gc.collect()
             zip_file.close()
 
         return {'statusCode': 200,
@@ -35,8 +41,9 @@ def lambda_handler(event=None, context=None):
 
     except Exception as e:
         print(traceback.print_exc())
-        return {'statusCode': 500,
-                'body': traceback.format_exc()}
+        return {'statusCode': 400,
+                'body': traceback.format_exc(),
+                'arquivo_grande_pra_porr_': f"{folder}/{filename}"}
 
 
 # def get_zip_files(folders, bucket_name):
