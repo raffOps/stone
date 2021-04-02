@@ -9,6 +9,8 @@ import pandas as pd
 
 def lambda_handler(event, context):
     bucket_name = os.getenv("S3_BUCKET_NAME")
+    if not bucket_name:
+        bucket_name = "sgs-extract"
     url_format = "http://api.bcb.gov.br/dados/serie/bcdata.sgs.{}/dados"
     CDI_CODE = list(range(21388, 21396))
     try:

@@ -53,7 +53,8 @@ resource "aws_lambda_function" "lambda" {
     function_name = each.value
     #handler       = "${each.value}.lambda_handler"
     role          = aws_iam_role.iam_for_lambda.arn
-    timeout = 500
+    timeout = 840 # 14 minutos
+    memory_size =  each.value == "pgfn-extract" ? 3000 : 1000
     image_uri     = "${aws_ecr_repository.repo.repository_url}@${data.aws_ecr_image.service_image.image_digest}"
     #runtime       = "python3.8"
     package_type  = "Image"
@@ -68,3 +69,4 @@ resource "aws_lambda_function" "lambda" {
 
     depends_on = [aws_ecr_repository.repo, data.aws_ecr_image.service_image]
 }
+
