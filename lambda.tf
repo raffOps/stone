@@ -54,8 +54,7 @@ resource "aws_lambda_function" "lambda" {
     #handler       = "${each.value}.lambda_handler"
     role          = aws_iam_role.iam_for_lambda.arn
     timeout = 500
-    image_uri     = docker_registry_image.app.name
-
+    image_uri     = "${aws_ecr_repository.repo.repository_url}@${data.aws_ecr_image.service_image.image_digest}"
     #runtime       = "python3.8"
     package_type  = "Image"
       image_config {
@@ -67,5 +66,5 @@ resource "aws_lambda_function" "lambda" {
     }
   }
 
-    depends_on = [aws_ecr_repository.repo]
+    depends_on = [aws_ecr_repository.repo, data.aws_ecr_image.service_image]
 }
