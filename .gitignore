@@ -142,3 +142,9 @@ terraform.tfstate.backup
 .terraform.tfstate.lock.info
 
 *.zip
+
+lambda_functions/fgts/
+
+lambda_functions/nao_previdenciario/
+
+lambda_functions/previdenciario/
