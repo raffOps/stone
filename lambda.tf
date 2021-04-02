@@ -18,23 +18,54 @@ resource "aws_iam_role" "iam_for_lambda" {
 EOF
 }
 
-resource "aws_lambda_function" "test_lambda" {
-  function_name = "lambda_function_name"
-  role          = aws_iam_role.iam_for_lambda.arn
-  handler       = "sgs-extract.lambda_handler"
-  runtime = "python3.8"
-  image_uri     = aws_ecr_repository.repo.repository_url
-  package_type = "Image"
+resource "aws_iam_policy" "lambda_s3" {
+  name = "lambda_s3_acess"
+  policy = <<EOF
+{
+"Version": "2012-10-17",
+"Statement": [
+    {
+        "Effect": "Allow",
+        "Action": [
+            "logs:*"
+        ],
+        "Resource": "arn:aws:logs:*:*:*"
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+            "s3:*"
+        ],
+        "Resource": "arn:aws:s3:::*"
+    }
+]
+}
+EOF
+}
 
+resource "aws_iam_role_policy_attachment" "lambda_role_attach" {
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = aws_iam_policy.lambda_s3.arn
+}
 
-  image_config {
-    command = ["sgs-extract.lambda_handler"]
-  }
+resource "aws_lambda_function" "lambda" {
+  for_each = var.lambda_bucket_name
+    function_name = each.value
+    #handler       = "${each.value}.lambda_handler"
+    role          = aws_iam_role.iam_for_lambda.arn
+    timeout = 500
+    image_uri     = docker_registry_image.app.name
+
+    #runtime       = "python3.8"
+    package_type  = "Image"
+      image_config {
+      command = ["${each.value}.lambda_handler"]
+    }
   environment {
     variables = {
-      foo = "bar"
+      S3_BUCKET_NAME = each.value
     }
   }
 
-  depends_on = [aws_ecr_repository.repo]
+    depends_on = [aws_ecr_repository.repo]
 }
