@@ -54,7 +54,7 @@ resource "aws_lambda_function" "lambda" {
     #handler       = "${each.value}.lambda_handler"
     role          = aws_iam_role.iam_for_lambda.arn
     timeout = 840 # 14 minutos
-    memory_size =  each.value == "pgfn-extract" ? 9000 : 1000
+    memory_size =  each.value == "pgfn-extract" || each.value == "pgfn-transform" ? 9000 : 1000
     image_uri     = "${aws_ecr_repository.repo.repository_url}@${data.aws_ecr_image.service_image.image_digest}"
     #runtime       = "python3.8"
     package_type  = "Image"

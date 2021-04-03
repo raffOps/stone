@@ -6,7 +6,7 @@ import awswrangler as wr
 import pandas as pd
 
 
-def lambda_handler(event, context):
+def lambda_handler(event=None, context=None):
     bucket_name_store = os.getenv("S3_BUCKET_NAME")
     # bucket_name_store = "sgs-transform"
     bucket_name_load = "{}-extract".format(bucket_name_store.split("-")[0])
@@ -25,17 +25,17 @@ def lambda_handler(event, context):
                              "valor": "float"
                             }
                          )
-        return {'statusCode': 200,
+        return {'status': True,
                 'body': json.dumps('sucess')}
 
     except Exception as e:
-        return {'statusCode': 400,
-                'body': traceback.format_exc()}
+        return {'status': False,
+                'body': json.dumps(traceback.format_exc())}
 
 
 def load_df(bucket_name_load):
     dfs = []
-    for file in wr.s3.list_objects(f"s3://{bucket_name_load}")[:3]:
+    for file in wr.s3.list_objects(f"s3://{bucket_name_load}"):
         code = file.split("/")[-1][:-5]
         df = wr.s3.read_json(f"{file}")
         df["codigo"] = code
@@ -47,4 +47,8 @@ def load_df(bucket_name_load):
 def transform_df(df):
     df.data = df.data.apply(lambda data: pd.to_datetime(data, yearfirst=True).date())
     return df
+
+
+if __name__ == "__main__":
+    lambda_handler()
 
