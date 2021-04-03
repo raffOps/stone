@@ -49,7 +49,7 @@ resource "aws_iam_role_policy_attachment" "lambda_role_attach" {
 }
 
 resource "aws_lambda_function" "lambda" {
-  for_each = var.lambda_bucket_name
+  for_each = toset(var.lambda_bucket_name)
     function_name = each.value
     #handler       = "${each.value}.lambda_handler"
     role          = aws_iam_role.iam_for_lambda.arn

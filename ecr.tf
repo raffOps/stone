@@ -10,10 +10,9 @@ resource "aws_ecr_lifecycle_policy" "repo-policy" {
   "rules": [
     {
       "rulePriority": 1,
-      "description": "Keep image deployed with tag '${var.tag}''",
+      "description": "Delete all untagged images",
       "selection": {
-        "tagStatus": "tagged",
-        "tagPrefixList": ["${var.tag}"],
+        "tagStatus": "untagged",
         "countType": "imageCountMoreThan",
         "countNumber": 1
       },

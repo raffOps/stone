@@ -41,12 +41,12 @@ def lambda_handler(event=None, context=None):
                 gc.collect()
             zip_file.close()
 
-        return {'statusCode': 200,
+        return {'status': True,
                 'body': json.dumps('sucess')}
 
     except Exception as e:
-        print(traceback.print_exc())
-        return {'statusCode': 400,
+        #print(traceback.print_exc())
+        return {'status': False,
                 'body': traceback.format_exc(),
                 'arquivo_grande_pra_porr_': f"{folder}/{filename}"}
 

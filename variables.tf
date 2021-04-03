@@ -30,6 +30,6 @@ variable "push_script" {
 }
 
 variable "lambda_bucket_name" {
-  type = set(string)
+  type = list(string)
   default = ["sgs-extract", "sgs-transform", "pgfn-extract", "pgfn-transform"]
 }

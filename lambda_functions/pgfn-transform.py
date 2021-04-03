@@ -35,34 +35,35 @@ def lambda_handler(event=None, context=None):
                                  use_threads=True,
                                  dataset=True,
                                  compression="snappy",
-                                 partition_cols=["QUARTER", "UF_UNIDADE_RESPONSAVEL"],
+                                 partition_cols=["quarter", "uf_unidade_responsavel"],
                                  #mode="overwrite_partitions",
                                  dtype={
-                                     "VALOR_CONSOLIDADO": "float",
-                                     "REMESSA": "date",
-                                     "DATA_INSCRICAO": "date"
+                                     "valor_consolidado": "float",
+                                     "remessa": "date",
+                                     "data_inscricao": "date"
                                  }
                                  )
                 del(df)
                     #gc.collect()
-        return {'statusCode': 200,
+        return {'status': True,
                 'body': json.dumps('sucess')}
 
     except Exception as e:
         #raise Exception(e)
-        return {'statusCode': 400,
+        return {'status': False,
                 'body': traceback.format_exc(),
                 'file': file}
 
 
 def transform_df(df, folder, remessa):
-    df = df[df.DATA_INSCRICAO.apply(lambda date: date[-4:] != "1000")]
+    df.columns = df.columns.str.strip().str.lower()
+    df = df[df.data_inscricao.apply(lambda date: date[-4:] != "1000")]
     df.reset_index(drop=True, inplace=True)
-    df.DATA_INSCRICAO = df.DATA_INSCRICAO.apply(lambda data:
+    df.data_inscricao = df.data_inscricao.apply(lambda data:
                                                 pd.to_datetime(data, yearfirst=True).date())
-    df["QUARTER"] = df.DATA_INSCRICAO.apply(get_quarter)
-    df["REMESSA"] = remessa
-    df["ORIGEM"] = folder
+    df["quarter"] = df.data_inscricao.apply(get_quarter)
+    df["remessa"] = remessa
+    df["origem"] = folder
     return df
 
 
