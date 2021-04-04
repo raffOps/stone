@@ -1,0 +1,5 @@
+{
+  "uf": ["AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RO", "RS", "RR", "SC", "SP", "SE", "TO", "NA"],
+  "origem": ["fgts", "previdenciario", "nao_previdenciario"],
+  "remessa": "2020-12-01"
+}

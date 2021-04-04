@@ -15,13 +15,13 @@ resource "aws_s3_bucket_public_access_block" "bucket" {
 }
 
 resource "aws_s3_bucket" "bucket_database" {
-  bucket = "divida-database"
+  bucket = var.bucket_database_name
   force_destroy = true
 }
 
 
 resource "aws_s3_bucket_public_access_block" "bucket_database_block" {
-  bucket = "divida-database"
+  bucket = var.bucket_database_name
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true

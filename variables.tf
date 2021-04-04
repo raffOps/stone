@@ -29,7 +29,14 @@ variable "push_script" {
   default     = "scripts/push_image.sh"
 }
 
+variable "bucket_database_name" {
+  type = string
+  default = "divida-database"
+}
+
 variable "lambda_bucket_name" {
   type = list(string)
-  default = ["sgs-extract", "sgs-transform", "pgfn-extract", "pgfn-transform"]
+  default = [ "sgs-extract", "sgs-transform", "pgfn-extract", "pgfn-transform"]
 }
+
+

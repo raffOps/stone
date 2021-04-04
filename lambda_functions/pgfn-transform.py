@@ -21,6 +21,12 @@ def lambda_handler(event=None, context=None):
 
             if not (isinstance(remessa, str) and isinstance(uf, str) and isinstance(origem, str)):
                 raise Exception("Inputs devem serem strings")
+
+            if origem == "nao_previdenciario" and uf == "SP":
+                return {'status': True,
+                        'body': 'O lambda nao consegue terminar em 15 minutos com esses parametros :(',
+                        "event": event}
+
         else:
             bucket_name_store = "pgfn-transform"
             remessa = "2020-12-01"
@@ -79,15 +85,9 @@ def get_quarter(date):
 
 if __name__ == "__main__":
     event = {
-              "uf": {
-                "uf": "MG"
-              },
-              "origem": {
-                "origem": "fgts"
-              },
-              "remessa": {
-                "remessa": "2020-12-01"
-              }
+              "uf": ["MG"],
+              "origem": ["fgts"],
+              "remessa": "2020-12-01"
             }
     lambda_handler(event=event)
 

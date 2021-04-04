@@ -96,7 +96,7 @@ resource "aws_sfn_state_machine" "pgfn" {
       "Type": "Map",
       "ItemsPath": "$.uf",
       "ResultPath": "$.array",
-      "MaxConcurrency": 1000,
+      "MaxConcurrency": 30,
       "Next": "Finished with sucess",
       "Parameters": {
         "uf.$": "$$.Map.Item.Value",
@@ -111,7 +111,7 @@ resource "aws_sfn_state_machine" "pgfn" {
             "Type": "Map",
             "ItemsPath": "$.origem",
             "ResultPath": "$.array",
-            "MaxConcurrency": 1000,
+            "MaxConcurrency": 3000,
             "Parameters": {
               "origem.$": "$$.Map.Item.Value",
               "remessa.$": "$.remessa",

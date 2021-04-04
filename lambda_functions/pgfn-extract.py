@@ -33,7 +33,7 @@ def lambda_handler(event=None, context=None):
         zip_response = requests.get(zip_url)
         zip_file = ZipFile(BytesIO(zip_response.content), mode="r")
         del(zip_response)
-        gc.collect()
+        #gc.collect()
         for filename in zip_file.namelist():
             file = zip_file.read(filename).decode("latin1")
             df = pd.read_csv(StringIO(file), sep=";")
@@ -41,7 +41,7 @@ def lambda_handler(event=None, context=None):
             #gc.collect()
             wr.s3.to_csv(df=df, path=f"s3://{bucket_name}/{remessa}/{origem}/{filename}")
             del(df)
-            gc.collect()
+            #gc.collect()
         zip_file.close()
 
         return {'status': True,
