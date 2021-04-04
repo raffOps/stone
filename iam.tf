@@ -122,5 +122,62 @@ resource "aws_iam_role_policy_attachment" "stf_xray_role_attach" {
   policy_arn = aws_iam_policy.stf_xray.arn
 }
 
+//resource "aws_iam_policy" "stf_athena" {
+//  name = "stf_athena_acess"
+//  policy = <<EOF
+//{
+//    "Version": "2012-10-17",
+//    "Statement": [
+//        {
+//            "Effect": "Allow",
+//            "Action": [
+//                "athena:*"
+//            ],
+//            "Resource": [
+//                "arn:aws:athena:us-east-1:*:workgroup/stone_data_challenge",
+//                "arn:aws:athena:us-east-1:*:datacatalog/*"
+//            ]
+//        },
+//        {
+//            "Effect": "Allow",
+//            "Action": [
+//                "s3:*"
+//            ],
+//            "Resource": [
+//                "arn:aws:s3:::*"
+//            ]
+//        },
+//        {
+//            "Effect": "Allow",
+//            "Action": [
+//                "glue:*"
+//            ],
+//            "Resource": [
+//                "arn:aws:glue:us-east-1:*:catalog",
+//                "arn:aws:glue:us-east-1:*:database/*",
+//                "arn:aws:glue:us-east-1:*:table/*",
+//                "arn:aws:glue:us-east-1:*:userDefinedFunction/*"
+//            ]
+//        },
+//        {
+//            "Effect": "Allow",
+//            "Action": [
+//                "lakeformation:*"
+//            ],
+//            "Resource": [
+//                "*"
+//            ]
+//        }
+//    ]
+//}
+//EOF
+//}
+//
+//resource "aws_iam_role_policy_attachment" "stf_athena_role_attach" {
+//  role       = aws_iam_role.iam_stf.name
+//  policy_arn = aws_iam_policy.stf_athena.arn
+//}
+
+
 
 

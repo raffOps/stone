@@ -1,37 +1,26 @@
-# terraform-aws-ecr-docker-image
+# [Data Challenge - Stone | Data Wrangling](https://drive.google.com/file/d/1D2e9djla0h920qy35fEQC44U0c9GnM7s/view?usp=sharing) 
 
-Terraform module to build & push a Docker image to an AWS ECR repository.
+Esse projeto usa a stack da AWS para executar o pipeline de ETL. As seguintes ferramentas foram utilizadas:
+- ECR
+- S3
+- Lambda
+- Athena
+- Step Functions
 
-The image can then be used in an AWS Fargate task.
 
-- Builds from a Dockerfile in the source path
-- Pushes to an AWS ECR repository
-- Can customize the push and hash scripts
-- Cleans up old images from the repository
+Para gerar facilmente toda essa infraestrutura foi utlizado o [Terraform](https://www.terraform.io/).
 
-## Requirements
 
-- Docker
-- md5sum (e.g. from `brew install md5sha1sum`)
+## Dependências:
+- Terraform: ```sudo make terraform```
+- AWS CLI: ```sudo make aws```
+- Docker: ```sudo make docker```
 
-## Usage
+## Deploy:
+- ```terraform init```
+- ```terraform plan```
+- ```terraform apply```    
 
-See [examples](examples).
+## Pipeline
 
-## Inputs
-
-| Name        | Description                                        |  Type  |  Default   | Required |
-| ----------- | -------------------------------------------------- | :----: | :--------: | :------: |
-| hash_script | Path to script to generate hash of source contents | string |    `""`    |    no    |
-| image_name  | Name of Docker image                               | string |    n/a     |   yes    |
-| push_script | Path to script to build and push Docker image      | string |    `""`    |    no    |
-| source_path | Path to Docker image source                        | string |    n/a     |   yes    |
-| tag         | Tag to use for deployed Docker image               | string | `"latest"` |    no    |
-
-## Outputs
-
-| Name           | Description                        |
-| -------------- | ---------------------------------- |
-| hash           | Docker image source hash           |
-| repository_url | ECR repository URL of Docker image |
-| tag            | Docker image tag                   |
+- D

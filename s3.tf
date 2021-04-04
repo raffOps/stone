@@ -1,7 +1,7 @@
 resource "aws_s3_bucket" "bucket" {
   for_each = toset(var.lambda_bucket_name)
     bucket = each.value
-    #force_destroy = true
+    force_destroy = true
 }
 
 resource "aws_s3_bucket_public_access_block" "bucket" {

@@ -1,15 +1,7 @@
-resource "aws_cloudwatch_log_group" "stone" {
-  name = "stone"
-}
 #================= SGS ======================================================================
 resource "aws_sfn_state_machine" "sgs" {
   name     = "sgs-pipeline"
   role_arn = aws_iam_role.iam_stf.arn
-//  logging_configuration {
-//    log_destination        = "${aws_cloudwatch_log_group.stone.arn}:*"
-//    include_execution_data = true
-//    level                  = "ERROR"
-//  }
   definition = <<EOF
 {
   "Comment": "A Hello World example of the Amazon States Language using Pass states",
@@ -69,54 +61,87 @@ resource "aws_sfn_state_machine" "pgfn" {
   role_arn = aws_iam_role.iam_stf.arn
   definition = <<EOF
 {
-  "Comment": "A Hello World example of the Amazon States Language using Pass states",
-  "StartAt": "Extract SGS",
+  "StartAt": "Extract PGFN - ORIGIN",
   "States": {
-    "Extract SGS": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::lambda:invoke",
+    "Extract PGFN - ORIGIN": {
+      "Type": "Map",
+      "InputPath": "$",
+      "ItemsPath": "$.origem",
+      "ResultPath": "$.array",
+      "MaxConcurrency": 3,
+      "Next": "Transform PGFN - CHOOSE UF",
       "Parameters": {
-        "FunctionName": "sgs-extract:$LATEST"
+        "origem.$": "$$.Map.Item.Value",
+        "remessa.$": "$.remessa"
       },
-      "Next": "Extract SGS finished with sucess?"
-    },
-    "Extract SGS finished with sucess?": {
-      "Type": "Choice",
-      "Choices": [
-        {
-          "Variable": "$.Payload.status",
-          "BooleanEquals": true,
-          "Next": "Transform SGS"
+      "Iterator": {
+        "StartAt": "Extract PGFN",
+        "States": {
+          "Extract PGFN": {
+            "End": true,
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "Parameters": {
+              "FunctionName": "${var.lambda_bucket_name[2]}:$LATEST",
+              "Payload": {
+                "origem.$": "$.origem",
+                "remessa.$": "$.remessa"
+              }
+            }
+          }
         }
-      ],
-      "Default": "Fail"
+      }
     },
-    "Transform SGS": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::lambda:invoke",
+    "Transform PGFN - CHOOSE UF": {
+      "Type": "Map",
+      "ItemsPath": "$.uf",
+      "ResultPath": "$.array",
+      "MaxConcurrency": 1000,
+      "Next": "Finished with sucess",
       "Parameters": {
-        "FunctionName": "sgs-transform:$LATEST"
+        "uf.$": "$$.Map.Item.Value",
+        "origem.$": "$.origem",
+        "remessa.$": "$.remessa"
       },
-      "Next": "Transform SGS finished with sucess?"
-    },
-    "Transform SGS finished with sucess?": {
-      "Type": "Choice",
-      "Choices": [
-        {
-          "Variable": "$.Payload.status",
-          "BooleanEquals": true,
-          "Next": "Finished with sucess"
+      "Iterator": {
+        "StartAt": "Transform PGFN - CHOOSE ORIGIN",
+        "States": {
+          "Transform PGFN - CHOOSE ORIGIN": {
+            "End": true,
+            "Type": "Map",
+            "ItemsPath": "$.origem",
+            "ResultPath": "$.array",
+            "MaxConcurrency": 1000,
+            "Parameters": {
+              "origem.$": "$$.Map.Item.Value",
+              "remessa.$": "$.remessa",
+              "uf.$": "$.uf"
+            },
+            "Iterator": {
+              "StartAt": "Transform PGFN",
+              "States": {
+                "Transform PGFN": {
+                  "End": true,
+                  "Type": "Task",
+                  "Resource": "arn:aws:states:::lambda:invoke",
+                  "Parameters": {
+                    "FunctionName": "${var.lambda_bucket_name[3]}:$LATEST",
+                    "Payload": {
+                      "origem.$": "$.origem",
+                      "remessa.$": "$.remessa",
+                      "uf.$": "$.uf"
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
-      ],
-      "Default": "Fail"
+      }
     },
     "Finished with sucess": {
       "Type": "Pass",
       "End": true
-    },
-    "Fail": {
-      "Type": "Fail",
-      "Cause": "No Matches!"
     }
   }
 }

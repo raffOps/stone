@@ -5,7 +5,7 @@ resource "aws_kms_key" "key" {
 
 resource "aws_athena_workgroup" "workgroup" {
   name = "stone_data_challenge"
-
+  force_destroy = true
   configuration {
     result_configuration {
       output_location = "s3://${aws_s3_bucket.bucket_database.bucket}/output/"
@@ -20,6 +20,7 @@ resource "aws_athena_workgroup" "workgroup" {
 resource "aws_athena_database" "database" {
   name   = "divida"
   bucket = aws_s3_bucket.bucket_database.bucket
+  force_destroy = true
 }
 
 ####################### TABELA SGS  ##############################################
