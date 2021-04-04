@@ -7,12 +7,12 @@ import pandas as pd
 
 
 def lambda_handler(event=None, context=None):
-    if context:
-        bucket_name_store = os.getenv("S3_BUCKET_NAME")
-    else:
-        bucket_name_store = "sgs-transform"
-    bucket_name_load = "{}-extract".format(bucket_name_store.split("-")[0])
     try:
+        if context:
+            bucket_name_store = os.getenv("S3_BUCKET_NAME")
+        else:
+            bucket_name_store = "sgs-transform"
+        bucket_name_load = "{}-extract".format(bucket_name_store.split("-")[0])
         df = load_df(bucket_name_load)
         df = transform_df(df)
 
@@ -28,10 +28,17 @@ def lambda_handler(event=None, context=None):
                             }
                          )
         return {'status': True,
-                'body': json.dumps('sucess')}
+                'body': 'sucess',
+                "event": event}
 
     except Exception:
-        raise Exception(traceback.format_exc())
+        raise Exception(json.dumps(
+            {
+                "event": event,
+                "body": traceback.format_exc()
+            }
+        )
+    )
 
 
 def load_df(bucket_name_load):

@@ -11,22 +11,27 @@ QUARTER_MONTH = [1, 4, 7, 10]
 
 
 def lambda_handler(event=None, context=None):
-    if event:
-        bucket_name_store = os.getenv("S3_BUCKET_NAME")
-        remessa = event["remessa"]
-        estado = event["estado"]
-        folder = event["folder"]
-    else:
-        bucket_name_store = "pgfn-transform"
-        remessa = "2020-12-01"
-        estado = "MG"
-        folder = "fgts"
-    bucket_name_load = "{}-extract".format(bucket_name_store.split("-")[0])
     try:
-        for file in wr.s3.list_objects(f"s3://{bucket_name_load}/{remessa}/{folder}"):
-            if estado in file:
+        if context:
+            bucket_name_store = os.getenv("S3_BUCKET_NAME")
+            #bucket_name_store = "pgfn-transform"
+            remessa = event["remessa"]
+            uf = event["uf"]
+            origem = event["origem"]
+
+            if not (isinstance(remessa, str) and isinstance(uf, str) and isinstance(origem, str)):
+                raise Exception("Inputs devem serem strings")
+        else:
+            bucket_name_store = "pgfn-transform"
+            remessa = "2020-12-01"
+            uf = "MG"
+            origem = "fgts"
+        bucket_name_load = "{}-extract".format(bucket_name_store.split("-")[0])
+
+        for file in wr.s3.list_objects(f"s3://{bucket_name_load}/{remessa}/{origem}"):
+            if uf in file:
                 df = wr.s3.read_csv(file, index_col=0)
-                df = transform_df(df, folder, remessa)
+                df = transform_df(df, origem, remessa)
                 wr.s3.to_parquet(df=df,
                                  path=f"s3://{bucket_name_store}/",
                                  use_threads=True,
@@ -42,15 +47,20 @@ def lambda_handler(event=None, context=None):
                 del(df)
 
         return {'status': True,
-                'body': json.dumps('sucess')}
+                'body': 'sucess',
+                "event": event}
 
-    except Exception as e:
-        return {'status': False,
-                'body': traceback.format_exc(),
-                'file': file}
+    except Exception:
+        raise Exception(json.dumps(
+            {
+                "event": event,
+                "body": traceback.format_exc()
+            }
+        )
+    )
 
 
-def transform_df(df, folder, remessa):
+def transform_df(df, origem, remessa):
     df.columns = df.columns.str.strip().str.lower()
     df = df[df.data_inscricao.apply(lambda date: date[-4:] != "1000")]
     df.reset_index(drop=True, inplace=True)
@@ -58,7 +68,7 @@ def transform_df(df, folder, remessa):
                                                 pd.to_datetime(data, yearfirst=True).date())
     df["quarter"] = df.data_inscricao.apply(get_quarter)
     df["remessa"] = remessa
-    df["origem"] = folder
+    df["origem"] = origem
     return df
 
 
@@ -68,6 +78,17 @@ def get_quarter(date):
 
 
 if __name__ == "__main__":
-    lambda_handler()
+    event = {
+              "uf": {
+                "uf": "MG"
+              },
+              "origem": {
+                "origem": "fgts"
+              },
+              "remessa": {
+                "remessa": "2020-12-01"
+              }
+            }
+    lambda_handler(event=event)
 
 

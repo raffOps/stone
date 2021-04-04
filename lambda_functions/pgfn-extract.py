@@ -26,6 +26,9 @@ def lambda_handler(event=None, context=None):
             remessa = "2020-12-01"
             origem = "previdenciario"
 
+        if not (isinstance(remessa, str) and isinstance(origem, str)):
+            raise Exception("Input devem serem strings")
+
         zip_url = ZIP_URLS[origem]
         zip_response = requests.get(zip_url)
         zip_file = ZipFile(BytesIO(zip_response.content), mode="r")
@@ -46,9 +49,13 @@ def lambda_handler(event=None, context=None):
                 "event": event}
 
     except Exception:
-        return {'status': False,
-                'body': traceback.format_exc(),
-                "event": event}
+        raise Exception(json.dumps(
+            {
+                "event": event,
+                "body": traceback.format_exc()
+            }
+        )
+    )
 
 
 if __name__ == "__main__":
