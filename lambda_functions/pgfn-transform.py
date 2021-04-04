@@ -11,20 +11,17 @@ QUARTER_MONTH = [1, 4, 7, 10]
 
 
 def lambda_handler(event=None, context=None):
-    bucket_name_store = os.getenv("S3_BUCKET_NAME")
-    if not bucket_name_store:
-        bucket_name_store = "pgfn-transform"
-    bucket_name_load = "{}-extract".format(bucket_name_store.split("-")[0])
-
     if event:
+        bucket_name_store = os.getenv("S3_BUCKET_NAME")
         remessa = event["remessa"]
         estado = event["estado"]
         folder = event["folder"]
     else:
+        bucket_name_store = "pgfn-transform"
         remessa = "2020-12-01"
         estado = "MG"
         folder = "fgts"
-    #folders = ["fgts", "previdenciario", "nao_previdenciario"]
+    bucket_name_load = "{}-extract".format(bucket_name_store.split("-")[0])
     try:
         for file in wr.s3.list_objects(f"s3://{bucket_name_load}/{remessa}/{folder}"):
             if estado in file:
@@ -36,7 +33,6 @@ def lambda_handler(event=None, context=None):
                                  dataset=True,
                                  compression="snappy",
                                  partition_cols=["quarter", "uf_unidade_responsavel"],
-                                 #mode="overwrite_partitions",
                                  dtype={
                                      "valor_consolidado": "float",
                                      "remessa": "date",
@@ -44,12 +40,11 @@ def lambda_handler(event=None, context=None):
                                  }
                                  )
                 del(df)
-                    #gc.collect()
+
         return {'status': True,
                 'body': json.dumps('sucess')}
 
     except Exception as e:
-        #raise Exception(e)
         return {'status': False,
                 'body': traceback.format_exc(),
                 'file': file}

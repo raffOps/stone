@@ -7,8 +7,10 @@ import pandas as pd
 
 
 def lambda_handler(event=None, context=None):
-    bucket_name_store = os.getenv("S3_BUCKET_NAME")
-    # bucket_name_store = "sgs-transform"
+    if context:
+        bucket_name_store = os.getenv("S3_BUCKET_NAME")
+    else:
+        bucket_name_store = "sgs-transform"
     bucket_name_load = "{}-extract".format(bucket_name_store.split("-")[0])
     try:
         df = load_df(bucket_name_load)
@@ -28,9 +30,8 @@ def lambda_handler(event=None, context=None):
         return {'status': True,
                 'body': json.dumps('sucess')}
 
-    except Exception as e:
-        return {'status': False,
-                'body': json.dumps(traceback.format_exc())}
+    except Exception:
+        raise Exception(traceback.format_exc())
 
 
 def load_df(bucket_name_load):
