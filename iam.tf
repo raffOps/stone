@@ -80,6 +80,15 @@ resource "aws_iam_policy" "stf_lambda" {
                 "lambda:InvokeFunction"
             ],
             "Resource": [
+                "arn:aws:lambda:us-east-1:*:function:*:*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "lambda:InvokeFunction"
+            ],
+            "Resource": [
                 "arn:aws:lambda:us-east-1:*:function:*"
             ]
         }
