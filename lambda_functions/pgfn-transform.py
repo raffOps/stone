@@ -14,30 +14,29 @@ def lambda_handler(event=None, context=None):
     try:
         if context:
             bucket_name_store = os.getenv("S3_BUCKET_NAME")
-            #bucket_name_store = "pgfn-transform"
-            remessa = event["remessa"]
-            uf = event["uf"]
-            origem = event["origem"]
+        else:
+            bucket_name_store = "pgfn-transform"
 
-            if not (isinstance(remessa, str) and isinstance(uf, str) and isinstance(origem, str)):
-                raise Exception("Inputs devem serem strings")
+        bucket_name_load = "{}-extract".format(bucket_name_store.split("-")[0])
+        remessa = event["remessa"]
+        uf = event["uf"]
+        origem = event["origem"]
 
-            if origem == "nao_previdenciario" and uf == "SP":
-                return {'status': True,
+        if not (isinstance(remessa, str) and isinstance(uf, str) and isinstance(origem, str)):
+            raise Exception("Inputs devem serem strings")
+
+        if origem == "nao_previdenciario" and uf == "SP":
+            return {'status': True,
                         'body': 'O lambda nao consegue terminar em 15 minutos com esses parametros :(',
                         "event": event}
 
-        else:
-            bucket_name_store = "pgfn-transform"
-            remessa = "2020-12-01"
-            uf = "MG"
-            origem = "fgts"
-        bucket_name_load = "{}-extract".format(bucket_name_store.split("-")[0])
-
+        print(f"{remessa} | {origem} | {uf}")
         for file in wr.s3.list_objects(f"s3://{bucket_name_load}/{remessa}/{origem}"):
-            if uf in file:
+            if uf == file[-13:-11]:
                 df = wr.s3.read_csv(file, index_col=0)
+                print(f"Download finished. File: {file}")
                 df = transform_df(df, origem, remessa)
+                print("Transformation finished")
                 wr.s3.to_parquet(df=df,
                                  path=f"s3://{bucket_name_store}/",
                                  use_threads=True,
@@ -51,7 +50,7 @@ def lambda_handler(event=None, context=None):
                                  }
                                  )
                 del(df)
-
+                print("Upload finished")
         return {'status': True,
                 'body': 'sucess',
                 "event": event}
@@ -63,7 +62,7 @@ def lambda_handler(event=None, context=None):
                 "body": traceback.format_exc()
             }
         )
-    )
+        )
 
 
 def transform_df(df, origem, remessa):
@@ -85,10 +84,10 @@ def get_quarter(date):
 
 if __name__ == "__main__":
     event = {
-              "uf": ["MG"],
-              "origem": ["fgts"],
+              "uf": "PR",
+              "origem": "nao_previdenciario",
               "remessa": "2020-12-01"
             }
-    lambda_handler(event=event)
+    lambda_handler(event=event, context=True)
 
 

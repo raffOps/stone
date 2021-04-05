@@ -38,7 +38,7 @@ def lambda_handler(event=None, context=None):
                 "body": traceback.format_exc()
             }
         )
-    )
+        )
 
 
 def load_df(bucket_name_load):

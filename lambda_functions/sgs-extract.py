@@ -13,11 +13,9 @@ def lambda_handler(event=None, context=None):
     try:
         if context:
             bucket_name = os.getenv("S3_BUCKET_NAME")
-            codigos = event["codigos"]
         else:
             bucket_name = "sgs-extract"
-            codigos = list(range(21388, 21396))
-
+        codigos = event["codigos"]
         for codigo in codigos:
             response = requests.get(URL_FORMAT.format(int(codigo))).json()
             df = pd.DataFrame(response)
@@ -34,8 +32,8 @@ def lambda_handler(event=None, context=None):
                 "body": traceback.format_exc()
             }
         )
-    )
+        )
 
 
 if __name__ == "__main__":
-    lambda_handler()
+    lambda_handler(event={"codigos": list(range(21388, 21396))}, context=False)
