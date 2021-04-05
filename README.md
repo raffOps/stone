@@ -153,11 +153,20 @@ Por isso, para popular o bucket, faça os seguintes procedimentos:
    
 ## Melhorias futuras
 
-Mesmo abusando do pararelismo que o Step Functions proporciona, 
+ - Mesmo abusando do pararelismo que o Step Functions proporciona, 
 a execução da função "pgfn-transform" estoura o cota máximo de tempo do Lambda, que é 15 minutos, 
 quando o input possui "SP" em uf e "nao_previdenciario" em origem. Para não prejudicar o ETL inteiro, decidi colocar no
 código da função "pgfn-transform" um condicional para evitar essa combinação de parâmetros. Uma forma de resolver essa situação seria 
 seria utlizar o [Fargate](https://aws.amazon.com/pt/fargate/?whats-new-cards.sort-by=item.additionalFields.postDateTime&whats-new-cards.sort-order=desc&fargate-blogs.sort-by=item.additionalFields.createdDate&fargate-blogs.sort-order=desc), já que ele é mais escalável que o Lambda.
+
+ - Fazer o sistema mais tolerável a falhas. Se o dowload de algum zip falhar, todo o processo falha. Não foram colocados tratadores de erros no Step Functions por falta 
+de conhecimento sobre como lidar com multiplos retornos em uma estrutura do tipo Map. 
+   
+ - Aumentar a velocidade transferência de arquivos.
+
+ - Implementar um gatilho para o Step Functions.
+
+ - Consertar a integração entre Step Functions e Athena, para assim ter o processo de ETL totalmente automatizado. 
 
 ## Material de apoio
 
