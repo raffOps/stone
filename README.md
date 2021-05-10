@@ -1,5 +1,5 @@
-# [Data Challenge - Stone | Data Wrangling](https://drive.google.com/file/d/1D2e9djla0h920qy35fEQC44U0c9GnM7s/view?usp=sharing) 
-
+# [Data Challenge - Stone | Engenharia de Dados](https://drive.google.com/file/d/1D2e9djla0h920qy35fEQC44U0c9GnM7s/view?usp=sharing) 
+## Projeto finalista
 Esse projeto utiliza a cloud da AWS. As seguintes ferramentas foram utilizadas:
 - ECR
 - S3
