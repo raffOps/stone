@@ -46,7 +46,7 @@ Quando o deploy terminar, verifique pelo AWS Console os seguintes recursos criad
 - Um Athena Workgroup de nome "stone_data_challenge". Ele terá o database "divida" e as queries salvas 
   "create_table_devedores" e "create_table_indicadores"
 
-![Infraestrutura](images/diagrama.png)
+![Infraestrutura](images/diagrama1.png)
 Existem 2 pipelines independetens:
 - SGS: ETL dos indicadores de crédito do [Sistema Gerenciador de Séries Temporais do Banco Central do Brasil](https://www3.bcb.gov.br/sgspub/localizarseries/localizarSeries.do?method=prepararTelaLocalizarSeries)
 - PGFN: ETL dos dados de dívida ativa geral presente no [portal de dados abertos da Procuradoria-Geral da Fazenda Nacional](https://www.gov.br/pgfn/pt-br/assuntos/divida-ativa-da-uniao/dados-abertos)
