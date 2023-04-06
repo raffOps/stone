@@ -17,7 +17,7 @@ def lambda_handler(event=None, context=None):
         else:
             bucket_name_store = "pgfn-transform"
 
-        bucket_name_load = "{}-extract".format(bucket_name_store.split("-")[0])
+        bucket_name_load = f'{bucket_name_store.split("-")[0]}-extract'
         remessa = event["remessa"]
         uf = event["uf"]
         origem = event["origem"]

@@ -8,11 +8,8 @@ import pandas as pd
 
 def lambda_handler(event=None, context=None):
     try:
-        if context:
-            bucket_name_store = os.getenv("S3_BUCKET_NAME")
-        else:
-            bucket_name_store = "sgs-transform"
-        bucket_name_load = "{}-extract".format(bucket_name_store.split("-")[0])
+        bucket_name_store = os.getenv("S3_BUCKET_NAME") if context else "sgs-transform"
+        bucket_name_load = f'{bucket_name_store.split("-")[0]}-extract'
         df = load_df(bucket_name_load)
         df = transform_df(df)
 

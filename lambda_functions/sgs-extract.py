@@ -11,10 +11,7 @@ URL_FORMAT = "http://api.bcb.gov.br/dados/serie/bcdata.sgs.{}/dados"
 
 def lambda_handler(event=None, context=None):
     try:
-        if context:
-            bucket_name = os.getenv("S3_BUCKET_NAME")
-        else:
-            bucket_name = "sgs-extract"
+        bucket_name = os.getenv("S3_BUCKET_NAME") if context else "sgs-extract"
         codigos = event["codigos"]
         for codigo in codigos:
             response = requests.get(URL_FORMAT.format(int(codigo))).json()

@@ -16,10 +16,7 @@ ZIP_URLS = {"fgts": "http://dadosabertos.pgfn.gov.br/Dados_abertos_FGTS.zip",
 
 def lambda_handler(event=None, context=None):
     try:
-        if context:
-            bucket_name = os.getenv("S3_BUCKET_NAME")
-        else:
-            bucket_name = "pgfn-extract"
+        bucket_name = os.getenv("S3_BUCKET_NAME") if context else "pgfn-extract"
         remessa = event["remessa"]
         origem = event["origem"]
         if not (isinstance(remessa, str) and isinstance(origem, str)):
